@@ -45,6 +45,9 @@ module.exports = (app, client) => {
     body("type")
       .isString()
       .isIn(["Plugin", "3D Asset", "2D Asset", "SFX", "VFX", "Other"]),
+    body("tags").isArray(),
+    body("tags.*.name").isString(),
+    body("tags.*.path").isString(),
     body("category").isString().isIn(["UE4", "Unity", "Misc", "General"]),
     (req, res) => {
       const errors = validationResult(req);
@@ -58,7 +61,9 @@ module.exports = (app, client) => {
         description: req.body.description,
         images: req.body.images,
         type: req.body.type,
+        tags: req.body.tags,
         category: req.body.category,
+        addedAt: new Date().getTime(),
       };
 
       client.resourcesCollection.insertOne(asset, (err, result) => {
